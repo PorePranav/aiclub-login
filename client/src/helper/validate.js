@@ -13,6 +13,18 @@ export async function resetPasswordValidate(values) {
     if(values.password !== values.confirm_password)
         errors.exist = toast.error('Passwords do not match');
     return errors;
+} 
+
+export async function registerValidation(values) {
+    const errors = usernameVerify({}, values);
+    passwordVerify(errors, values);
+    emailVerify(errors, values);
+
+    return errors;
+}
+
+export async function profileValidation(values) {
+    return emailVerify({}, values);
 }
 
 function usernameVerify(error = {}, values) {
@@ -33,3 +45,13 @@ function passwordVerify(error = {}, values) {
         error.password = toast.error('Password should be more than 4 characters long');
     return error;
 }
+
+function emailVerify(error = {}, values) {
+    if(!values.email)
+        error.email = toast.error('Email is required');
+    else if(values.email.includes(' ') || !/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(values.email))
+        error.email = toast.error('Enter a valid email');
+    return error;
+}
+
+
