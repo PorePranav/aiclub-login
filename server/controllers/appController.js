@@ -3,6 +3,17 @@ import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import env from '../config.js';
 
+export async function verifyUser(req, res, next) {
+    try {
+        const { username } = req.method === 'GET' ? req.query : req.body;
+        let exist = await UserModel.findOne({ username });
+        if(!exist) return res.status(404).send({ error: 'Cannot find user'});
+        next();
+    } catch(error) {
+        return res.status(404).send({error: 'Authentication error'})
+    }
+}
+
 export async function register(req, res) {
     try {
         const { username, password, profile, email } = req.body;        
@@ -37,7 +48,7 @@ export async function register(req, res) {
                             });
 
                             user.save()
-                                .then(result => res.status(201).send({ msg: "User Register Successfully"}))
+                                .then(result => res.status(201).send({ msg: "User registered successfully"}))
                                 .catch(error => res.status(500).send({error}))
 
                         }).catch(error => {
@@ -53,7 +64,6 @@ export async function register(req, res) {
     } catch (error) {
         return res.status(500).send(error);
     }
-
 }
 
 export async function login(req, res) {
@@ -88,14 +98,44 @@ export async function login(req, res) {
     }
 }
   
-
 export async function getUser(req, res) {
-    res.join('getUser route');
+    const { username } = req.params;
+
+    try {
+        if(!username) return res.status(501).send({ error: 'Invalid username' });
+        UserModel.findOne({ username })
+            .then((user) => {
+                if(!user) return res.status(501).send({ error: 'Could not find the user' });
+                const { password, ...rest } = Object.assign({}, user.toJSON());
+                return res.status(201).send(rest);
+            }) 
+            .catch((error) => {
+                return res.status(501).send({error: 'Could not find the user'});
+            })
+    } catch(error) {
+        return res.status(404).send({ error: 'Cannot find user data' });
+    }
 }
 
 export async function updateUser(req, res) {
-    res.join('updateUser route');
-}
+    try {
+      const id = req.query.id;
+      if (id) {
+        const body = req.body;
+        UserModel.updateOne({ _id: id }, body)
+          .then(() => {
+            return res.status(201).send({ msg: 'Record updated!' });
+          })
+          .catch((err) => {
+            throw err;
+          });
+      } else {
+        return res.status(401).send({ error: 'User not found' });
+      }
+    } catch (error) {
+      return res.status(500).send({ error: error.message });
+    }
+  }
 
 export async function generateOTP(req, res) {
     res.join('generateOTP route');
