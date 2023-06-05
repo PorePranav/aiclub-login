@@ -2,6 +2,7 @@ import UserModel from "../model/User.model.js";
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import env from '../config.js';
+import otpGenerator from 'otp-generator';
 
 export async function verifyUser(req, res, next) {
     try {
@@ -123,7 +124,7 @@ export async function updateUser(req, res) {
 
         if (userId) {
             UserModel.updateOne({ _id: userId }, body)
-                .then(() => {
+            .then(() => {
                     return res.status(201).send({ msg: 'Record updated!' });
             })
             .catch((err) => {
@@ -138,17 +139,83 @@ export async function updateUser(req, res) {
 }
   
 export async function generateOTP(req, res) {
-    res.join('generateOTP route');
+    req.app.locals.otp = await otpGenerator.generate(6, { lowerCaseAlphabets: false, upperCaseAlphabets: false, specialChars: false });
+    res.status(201).send({ code: req.app.locals.otp });
 }
 
 export async function verifyOTP(req, res) {
-    res.join('verifyOTP route');
+    const { code } = req.query;
+    if(parseInt(req.app.locals.otp) === parseInt(code)) {
+        req.app.locals.otp = null;
+        req.app.locals.resetSession = true;
+        return res.status(201).send({ msg: 'Verifed successfully' });
+    }
+    return res.status(400).send({ error: 'Invalid OTP'});
 }
 
 export async function createResetSession(req, res) {
-    res.join('createResetSession route');
+    if(req.app.locals.resetSession) {
+        req.app.locals.resetSession = false;
+        return res.status(201).send({ msg: 'Access granted' });
+    }
+    return res.status(440).send({ error: 'Session expired' });
 }
 
+// export async function resetPassword(req, res) {
+//     try {
+//         if (!req.app.locals.resetSession) {
+//             return res.status(404).send({ error: 'Session expired' });
+//         }
+
+//         const { username, password } = req.body;
+//         try {
+//             UserModel.findOne({ username })
+//                 .then((user) => { // Pass the user object to the outer then block
+//                     bcrypt.hash(password, 10)
+//                         .then((hashedPassword) => {
+//                             UserModel.updateOne({ username: user.username }, { password: hashedPassword })
+//                                 .then(() => {
+//                                     return res.status(201).send({ msg: 'Password updated!' });
+//                                 })
+//                                 .catch((err) => {
+//                                     throw err;
+//                                 });
+//                         })
+//                         .catch((error) => {
+//                             return res.status(500).send({ error: 'Unable to hash password' });
+//                         });
+//                 })
+//                 .catch((error) => {
+//                     return res.status(404).send({ error: 'Username not found' });
+//                 });
+//         } catch (error) {
+//             return res.status(500).send({ error });
+//         }
+//     } catch (error) {
+//         return res.status(401).send({ error });
+//     }
+// }
+
 export async function resetPassword(req, res) {
-    res.join('resetPassword route');
+    try {
+        if (!req.app.locals.resetSession) {
+            return res.status(404).send({ error: 'Session expired' });
+        }
+
+        const { username, password } = req.body;
+        const user = await UserModel.findOne({ username });
+
+        if (!user) {
+            return res.status(404).send({ error: 'Username not found' });
+        }
+
+        const hashedPassword = await bcrypt.hash(password, 10);
+        await UserModel.updateOne({ username: user.username }, { password: hashedPassword });
+
+        return res.status(201).send({ msg: 'Password updated' });
+    } catch (error) {
+        return res.status(500).send({ error: 'Unable to reset password' });
+    }
 }
+
+
