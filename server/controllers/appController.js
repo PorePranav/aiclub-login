@@ -25,8 +25,6 @@ export async function register(req, res) {
             });
         });
 
-
-        // check for existing email
         const existEmail = new Promise((resolve, reject) => {
             UserModel.findOne({ email }).then(emailData => {
                 if(emailData) reject( {error: 'Another account has taken this email'} );
@@ -81,11 +79,12 @@ export async function login(req, res) {
         }
   
         const token = jwt.sign({
-          userId: user._id,
-          username: user.username,
-        },
-        env.JWT_SECRET,
-        { expiresIn: '24h' });
+            userId: user._id,
+            username: user.username,
+            },
+            env.JWT_SECRET,
+            { expiresIn: '24h' }
+        );
   
         return res.status(200).send({
             msg: 'Login successful',
@@ -119,24 +118,25 @@ export async function getUser(req, res) {
 
 export async function updateUser(req, res) {
     try {
-      const id = req.query.id;
-      if (id) {
-        const body = req.body;
-        UserModel.updateOne({ _id: id }, body)
-          .then(() => {
-            return res.status(201).send({ msg: 'Record updated!' });
-          })
-          .catch((err) => {
-            throw err;
-          });
-      } else {
-        return res.status(401).send({ error: 'User not found' });
-      }
-    } catch (error) {
-      return res.status(500).send({ error: error.message });
-    }
-  }
+        const { userId } = req.user;
+        const { body } = req;
 
+        if (userId) {
+            UserModel.updateOne({ _id: userId }, body)
+                .then(() => {
+                    return res.status(201).send({ msg: 'Record updated!' });
+            })
+            .catch((err) => {
+                throw err;
+            });
+        } else {
+            return res.status(401).send({ error: 'User not found' });
+        }
+    } catch (error) {
+        return res.status(500).send({ error: error.message });
+    }
+}
+  
 export async function generateOTP(req, res) {
     res.join('generateOTP route');
 }
