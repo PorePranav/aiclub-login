@@ -10,7 +10,7 @@ const transporter = nodemailer.createTransport({
         user: 'bertrand.leannon@ethereal.email',
         pass: 'kmgd6EqJvD7Ycrhdan'
     }
-});
+})
 
 let mailGenerator = new mailgen({
     theme: 'default',
@@ -40,7 +40,7 @@ export const registerMail = async (req, res) => {
 
     transporter.sendMail(message)
         .then(() => {
-            return res.status(200).send({ msg: 'You should have received an email from us.'})
+            return res.status(200).send({ msg: 'Email sent'})
         })
         .catch(error => res.status(500).send({ error }))
 }

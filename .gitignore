@@ -15,6 +15,7 @@ server/config.js
 
 # misc
 client/.env
+client/src/.env
 server/.env
 .DS_Store
 .env.local

@@ -161,41 +161,6 @@ export async function createResetSession(req, res) {
     return res.status(440).send({ error: 'Session expired' });
 }
 
-// export async function resetPassword(req, res) {
-//     try {
-//         if (!req.app.locals.resetSession) {
-//             return res.status(404).send({ error: 'Session expired' });
-//         }
-
-//         const { username, password } = req.body;
-//         try {
-//             UserModel.findOne({ username })
-//                 .then((user) => { // Pass the user object to the outer then block
-//                     bcrypt.hash(password, 10)
-//                         .then((hashedPassword) => {
-//                             UserModel.updateOne({ username: user.username }, { password: hashedPassword })
-//                                 .then(() => {
-//                                     return res.status(201).send({ msg: 'Password updated!' });
-//                                 })
-//                                 .catch((err) => {
-//                                     throw err;
-//                                 });
-//                         })
-//                         .catch((error) => {
-//                             return res.status(500).send({ error: 'Unable to hash password' });
-//                         });
-//                 })
-//                 .catch((error) => {
-//                     return res.status(404).send({ error: 'Username not found' });
-//                 });
-//         } catch (error) {
-//             return res.status(500).send({ error });
-//         }
-//     } catch (error) {
-//         return res.status(401).send({ error });
-//     }
-// }
-
 export async function resetPassword(req, res) {
     try {
         if (!req.app.locals.resetSession) {
@@ -217,5 +182,3 @@ export async function resetPassword(req, res) {
         return res.status(500).send({ error: 'Unable to reset password' });
     }
 }
-
-
