@@ -1,16 +1,15 @@
 import nodemailer from 'nodemailer';
 import mailgen from 'mailgen';
-
 import ENV from '../config.js';
 
 const transporter = nodemailer.createTransport({
     host: 'smtp.ethereal.email',
     port: 587,
     auth: {
-        user: 'bertrand.leannon@ethereal.email',
-        pass: 'kmgd6EqJvD7Ycrhdan'
+        user: ENV.EMAIL,
+        pass: ENV.PASSWORD
     }
-})
+});
 
 let mailGenerator = new mailgen({
     theme: 'default',
@@ -18,7 +17,7 @@ let mailGenerator = new mailgen({
         name: 'Mailgen',
         link: 'https://mailgen.js'
     }
-})
+});
 
 export const registerMail = async (req, res) => {
     const { username, userEmail, text, subject } = req.body;
