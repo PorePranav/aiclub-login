@@ -155,30 +155,46 @@ export async function verifyOTP(req, res) {
 
 export async function createResetSession(req, res) {
     if(req.app.locals.resetSession) {
-        req.app.locals.resetSession = false;
         return res.status(201).send({ flag: req.app.locals.resetSession });
     }
     return res.status(440).send({ error: 'Session expired' });
 }
 
-export async function resetPassword(req, res) {
+export async function resetPassword(req,res){
     try {
-        if (!req.app.locals.resetSession) {
-            return res.status(404).send({ error: 'Session expired' });
-        }
+        
+        if(!req.app.locals.resetSession) return res.status(440).send({error : "Session expired!"});
 
         const { username, password } = req.body;
-        const user = await UserModel.findOne({ username });
 
-        if (!user) {
-            return res.status(404).send({ error: 'Username not found' });
+        try { 
+            UserModel.findOne({ username})
+                .then(user => {
+                    bcrypt.hash(password, 10)
+                        .then(hashedPassword => {
+                            UserModel.updateOne({ username: user.username }, { password: hashedPassword })
+                                .then((data) => {
+                                    req.app.locals.resetSession = false;
+                                    return res.status(201).send({ msg: "Record Updated...!" });
+                            })
+                            .catch((err) => {
+                                throw err;
+                            });
+                        })
+                        .catch( e => {
+                            return res.status(500).send({
+                                error : "Enable to hashed password"
+                            })
+                        })
+                })
+                .catch(error => {
+                    return res.status(404).send({ error : "Username not Found"});
+                })
+        } catch (error) {
+            return res.status(500).send({ error })
         }
-
-        const hashedPassword = await bcrypt.hash(password, 10);
-        await UserModel.updateOne({ username: user.username }, { password: hashedPassword });
-
-        return res.status(201).send({ msg: 'Password updated' });
     } catch (error) {
-        return res.status(500).send({ error: 'Unable to reset password' });
+        return res.status(401).send({ error })
     }
 }
+

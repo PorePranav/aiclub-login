@@ -13,7 +13,6 @@ export default function Recovery() {
 
     useEffect(() => {
         generateOTP(username).then((OTP) => {
-            console.log(OTP);
             if(OTP) return toast.success('OTP has been sent to your email');
             return toast.error('Problem while generating OTP');
         })
@@ -45,7 +44,6 @@ export default function Recovery() {
     }
 
     return(
-        <React.StrictMode>
         <div className="container mx-auto">
             <Toaster position="top-center" reverseOrder={false}></Toaster>
             <div className="flex justify-center items-center h-screen">
@@ -73,6 +71,5 @@ export default function Recovery() {
                 </div>
             </div>    
         </div>
-        </React.StrictMode>
-    )
+)
 }

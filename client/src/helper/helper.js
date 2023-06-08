@@ -92,8 +92,10 @@ export async function verifyOTP({ username, code }) {
 export async function resetPassword({ username, password }) {
     try {
         const { data, status } = await axios.put('/api/resetPassword', { username, password });
+        console.log(data);
         return Promise.resolve({ data, status });
     } catch(error) {
+        console.log(error);
         return Promise.reject({ error });
     }
 }
