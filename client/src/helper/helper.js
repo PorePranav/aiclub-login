@@ -1,6 +1,16 @@
 import axios from 'axios';
 
+import jwt_decode from 'jwt-decode';
+
 axios.defaults.baseURL = 'http://localhost:8080/';
+
+export async function getUsername() {
+    const token = localStorage.getItem('token');
+    if(!token) return Promise.reject('Cannot find token');
+    let decode = jwt_decode(token);
+    return decode;
+
+}
 
 export async function authenticate(username) {
     try {
