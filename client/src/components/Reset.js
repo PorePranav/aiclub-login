@@ -34,12 +34,11 @@ export default function Reset() {
       });
 
       resetPromise.then(() => { navigate('/password') })
-      .catch(() => {
-
+      .catch((err) => {
+        
       });
     }
-  })
-
+  });
 
   if(isLoading) return <h1 className='text-2xl font-bold'>isLoading</h1>;
   if(serverError) return <h1 className='text-xl text-red-500'>{serverError.message}</h1>
@@ -64,7 +63,7 @@ export default function Reset() {
               <div className="textbox flex flex-col items-center gap-6">
                   <input {...formik.getFieldProps('password')} className={styles.textbox} type="password" placeholder='New Password' />
                   <input {...formik.getFieldProps('confirm_password')} className={styles.textbox} type="password" placeholder='Repeat Password' />
-                  <button className={styles.btn} type='submit'>Reset</button>
+                  <button className={styles.btn} type='submit'>Reset Password</button>
               </div>
 
           </form>

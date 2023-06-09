@@ -33,6 +33,9 @@ export default function Password() {
                 localStorage.setItem('token', token);
                 navigate('/profile');
             })
+            .catch((err) => {
+                
+            });
         }
     });
 

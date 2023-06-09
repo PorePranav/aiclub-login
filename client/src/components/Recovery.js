@@ -62,7 +62,7 @@ export default function Recovery() {
                                 </span>
                                 <input onChange={ (e) => setOTP(e.target.value) } className = {styles.textbox} type="password" placeholder="OTP"/>
                             </div>
-                            <button className = {styles.btn} type="submit">Sign In</button>
+                            <button className = {styles.btn} type="submit">Reset</button>
                         </div> 
                     </form>
                     <div className="text-center py-4">
