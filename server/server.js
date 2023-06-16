@@ -32,7 +32,6 @@ connect()
         }
     })
     .catch(error => {
-        console.log(`Invalid DB connection: ${err}`);
+        console.log(`Invalid DB connection: ${error}`);
     }
 );
-
