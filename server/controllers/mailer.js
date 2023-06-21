@@ -2,20 +2,23 @@ import nodemailer from 'nodemailer';
 import mailgen from 'mailgen';
 import ENV from '../config.js';
 
-const transporter = nodemailer.createTransport({
-    host: 'smtp.ethereal.email',
-    port: 587,
+const smtpConfig = {
+    host: "smtp.gmail.com",
+    port: 465,
+    secure: true,
     auth: {
-        user: ENV.EMAIL,
-        pass: ENV.PASSWORD
+      user: ENV.EMAIL,
+      pass: ENV.PASSWORD,
     }
-});
+};
+
+const transporter = nodemailer.createTransport(smtpConfig);
 
 let mailGenerator = new mailgen({
-    theme: 'default',
+    theme: 'cerberus',
     product: {
-        name: 'Mailgen',
-        link: 'https://mailgen.js'
+        name: 'AI Club, VITB',
+        link: 'aivitb.com'
     }
 });
 
