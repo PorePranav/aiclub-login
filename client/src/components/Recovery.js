@@ -71,5 +71,5 @@ export default function Recovery() {
                 </div>
             </div>    
         </div>
-)
+    )
 }

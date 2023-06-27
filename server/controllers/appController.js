@@ -110,7 +110,7 @@ export async function getUser(req, res) {
                 return res.status(201).send(rest);
             }) 
             .catch((error) => {
-                return res.status(501).send({error: 'Could not find the user'});
+                return res.status(501).send({ error: 'Could not find the user' });
             })
     } catch(error) {
         return res.status(404).send({ error: 'Cannot find user data' });
